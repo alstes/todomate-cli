@@ -42,10 +42,11 @@ pub struct Todo {
     pub priority: String,
     #[serde(rename = "dueDate")]
     pub due_date: Option<String>,
+    #[serde(default)]
     pub tags: Vec<String>,
     #[serde(rename = "parentId")]
     pub parent_id: Option<String>,
-    #[serde(rename = "goalIds")]
+    #[serde(rename = "goalIds", default)]
     pub goal_ids: Vec<String>,
     pub order: serde_json::Value,
 }
@@ -90,6 +91,7 @@ pub struct Goal {
     pub description: Option<String>,
     pub notes: Option<String>,
     pub completed: bool,
+    #[serde(default)]
     pub tags: Vec<String>,
     pub order: serde_json::Value,
     pub deleted: Option<bool>,
