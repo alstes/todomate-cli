@@ -44,6 +44,9 @@ fn try_keychain_save(creds: &Credentials) -> Result<()> {
     Entry::new(SERVICE, KEY_JWT)?.set_password(&creds.jwt)?;
     Entry::new(SERVICE, KEY_REFRESH)?.set_password(&creds.refresh_token)?;
     Entry::new(SERVICE, KEY_SUBSCRIPTION)?.set_password(&creds.subscription_key)?;
+    // Verify the write actually persisted — on macOS the first write to a new
+    // service can silently succeed without storing anything.
+    Entry::new(SERVICE, KEY_JWT)?.get_password()?;
     Ok(())
 }
 
