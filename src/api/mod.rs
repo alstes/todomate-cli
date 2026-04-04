@@ -98,7 +98,13 @@ impl ApiClient {
 
     // --- Todos ---
 
-    pub fn list_todos(&self, completed: Option<bool>, priority: Option<&str>) -> Result<Vec<Todo>> {
+    pub fn list_todos(
+        &self,
+        completed: Option<bool>,
+        priority: Option<&str>,
+        limit: Option<u32>,
+        offset: Option<u32>,
+    ) -> Result<Vec<Todo>> {
         let resp = self.execute(|jwt, key| {
             let mut req = self
                 .client
@@ -109,6 +115,12 @@ impl ApiClient {
             }
             if let Some(p) = priority {
                 req = req.query(&[("priority", p)]);
+            }
+            if let Some(l) = limit {
+                req = req.query(&[("limit", l.to_string())]);
+            }
+            if let Some(o) = offset {
+                req = req.query(&[("offset", o.to_string())]);
             }
             req
         })?;
