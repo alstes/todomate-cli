@@ -2,6 +2,10 @@
 
 use serde::{Deserialize, Serialize};
 
+fn default_priority() -> String {
+    "medium".to_string()
+}
+
 // --- Auth ---
 
 #[derive(Debug, Deserialize)]
@@ -39,6 +43,7 @@ pub struct Todo {
     pub description: Option<String>,
     pub notes: Option<String>,
     pub completed: bool,
+    #[serde(default = "default_priority")]
     pub priority: String,
     #[serde(rename = "dueDate")]
     pub due_date: Option<String>,

@@ -228,7 +228,10 @@ impl ApiClient {
 fn parse_response<T: serde::de::DeserializeOwned>(resp: Response) -> Result<T> {
     let status = resp.status();
     if status.is_success() {
-        let body: T = resp.json()?;
+        let text = resp.text()?;
+        let body: T = serde_json::from_str(&text).map_err(|e| {
+            CliError::Other(format!("error decoding response body: {e}\nraw: {text}"))
+        })?;
         return Ok(body);
     }
     // Try to extract a message from the JSON body
