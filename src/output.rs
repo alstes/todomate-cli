@@ -1,4 +1,5 @@
 use crate::api::models::{Goal, Todo, Vision};
+use colored_json::{ColorMode, Output};
 use comfy_table::{presets::UTF8_BORDERS_ONLY, Table};
 use owo_colors::OwoColorize;
 use serde::Serialize;
@@ -27,10 +28,13 @@ fn atty_stdout() -> bool {
 // --- JSON passthrough ---
 
 pub fn print_json<T: Serialize>(value: &T) {
-    println!(
-        "{}",
-        serde_json::to_string_pretty(value).unwrap_or_default()
-    );
+    let mode = if color_enabled() {
+        ColorMode::On
+    } else {
+        ColorMode::Off
+    };
+    let s = colored_json::to_colored_json(value, mode).unwrap_or_default();
+    println!("{s}");
 }
 
 // --- Todo output ---
