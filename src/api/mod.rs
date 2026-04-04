@@ -166,6 +166,18 @@ impl ApiClient {
         parse_response(resp)
     }
 
+    pub fn bulk_tag_todos(&self, updates: Vec<BulkTagItem>) -> Result<BulkTagResponse<Todo>> {
+        let body = BulkTagRequest { updates };
+        let resp = self.execute(|jwt, key| {
+            self.client
+                .patch(format!("{}/v1/todos/bulk-tag", self.base_url))
+                .headers(self.auth_headers(jwt, key))
+                .header(CONTENT_TYPE, "application/json")
+                .json(&body)
+        })?;
+        parse_response(resp)
+    }
+
     // --- Goals ---
 
     pub fn list_goals(&self) -> Result<Vec<Goal>> {
@@ -217,6 +229,18 @@ impl ApiClient {
                 .json(&ReorderRequest {
                     position: position.clone(),
                 })
+        })?;
+        parse_response(resp)
+    }
+
+    pub fn bulk_tag_goals(&self, updates: Vec<BulkTagItem>) -> Result<BulkTagResponse<Goal>> {
+        let body = BulkTagRequest { updates };
+        let resp = self.execute(|jwt, key| {
+            self.client
+                .patch(format!("{}/v1/goals/bulk-tag", self.base_url))
+                .headers(self.auth_headers(jwt, key))
+                .header(CONTENT_TYPE, "application/json")
+                .json(&body)
         })?;
         parse_response(resp)
     }

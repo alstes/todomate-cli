@@ -41,6 +41,8 @@ pub enum Command {
     Rm(RmArgs),
     /// Move a todo to a different position
     Reorder(ReorderArgs),
+    /// Set tags on one or more todos
+    Tag(TagArgs),
     /// Goal management subcommands
     Goal {
         #[command(subcommand)]
@@ -167,6 +169,17 @@ pub struct RmArgs {
     pub force: bool,
 }
 
+#[derive(Args)]
+pub struct TagArgs {
+    /// One or more todo IDs
+    #[arg(required = true, value_name = "ID")]
+    pub ids: Vec<String>,
+
+    /// Tags to set (repeatable). Replaces existing tags.
+    #[arg(long, required = true, value_name = "TAG")]
+    pub tags: Vec<String>,
+}
+
 #[derive(Subcommand)]
 pub enum GoalCommand {
     /// List goals
@@ -201,6 +214,15 @@ pub enum GoalCommand {
         id: String,
         #[arg(long)]
         force: bool,
+    },
+    /// Set tags on one or more goals
+    Tag {
+        /// One or more goal IDs
+        #[arg(required = true, value_name = "ID")]
+        ids: Vec<String>,
+        /// Tags to set (repeatable). Replaces existing tags.
+        #[arg(long, required = true, value_name = "TAG")]
+        tags: Vec<String>,
     },
     /// Move a goal to a different position
     Reorder {

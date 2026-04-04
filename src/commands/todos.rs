@@ -1,6 +1,6 @@
-use crate::api::models::{CreateTodoRequest, ReorderPosition, UpdateTodoRequest};
+use crate::api::models::{BulkTagItem, CreateTodoRequest, ReorderPosition, UpdateTodoRequest};
 use crate::api::ApiClient;
-use crate::cli::{AddArgs, EditArgs, ListArgs, ReorderArgs, RmArgs};
+use crate::cli::{AddArgs, EditArgs, ListArgs, ReorderArgs, RmArgs, TagArgs};
 use crate::error::CliError;
 use crate::output;
 use anyhow::Result;
@@ -101,6 +101,28 @@ pub fn reorder(client: &ApiClient, args: &ReorderArgs, json: bool) -> Result<()>
         output::print_json(&todo);
     } else {
         println!("Moved: {}", todo.text);
+    }
+    Ok(())
+}
+
+pub fn tag(client: &ApiClient, args: &TagArgs, json: bool) -> Result<()> {
+    let updates = args
+        .ids
+        .iter()
+        .map(|id| BulkTagItem {
+            id: id.clone(),
+            tags: args.tags.clone(),
+        })
+        .collect();
+    let result = client.bulk_tag_todos(updates)?;
+    if json {
+        output::print_json(&result.items);
+    } else {
+        println!(
+            "Tagged {} todo{}.",
+            result.updated,
+            if result.updated == 1 { "" } else { "s" }
+        );
     }
     Ok(())
 }

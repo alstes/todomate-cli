@@ -153,6 +153,26 @@ pub struct ReorderRequest {
     pub position: ReorderPosition,
 }
 
+// --- Bulk tag ---
+
+#[derive(Debug, Serialize)]
+pub struct BulkTagItem {
+    pub id: String,
+    pub tags: Vec<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct BulkTagRequest {
+    pub updates: Vec<BulkTagItem>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BulkTagResponse<T> {
+    pub success: bool,
+    pub updated: u32,
+    pub items: Vec<T>,
+}
+
 // --- Generic delete response ---
 
 #[derive(Debug, Deserialize)]

@@ -1,4 +1,4 @@
-use crate::api::models::{CreateGoalRequest, ReorderPosition, UpdateGoalRequest};
+use crate::api::models::{BulkTagItem, CreateGoalRequest, ReorderPosition, UpdateGoalRequest};
 use crate::api::ApiClient;
 use crate::cli::GoalCommand;
 use crate::error::CliError;
@@ -79,6 +79,25 @@ pub fn handle(client: &ApiClient, action: &GoalCommand, json: bool) -> Result<()
                 output::print_json(&goal);
             } else {
                 output::print_goal_done(&goal);
+            }
+        }
+        GoalCommand::Tag { ids, tags } => {
+            let updates = ids
+                .iter()
+                .map(|id| BulkTagItem {
+                    id: id.clone(),
+                    tags: tags.clone(),
+                })
+                .collect();
+            let result = client.bulk_tag_goals(updates)?;
+            if json {
+                output::print_json(&result.items);
+            } else {
+                println!(
+                    "Tagged {} goal{}.",
+                    result.updated,
+                    if result.updated == 1 { "" } else { "s" }
+                );
             }
         }
         GoalCommand::Reorder {
