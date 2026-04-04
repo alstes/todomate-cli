@@ -102,25 +102,20 @@ impl ApiClient {
         &self,
         completed: Option<bool>,
         priority: Option<&str>,
-        limit: Option<u32>,
-        offset: Option<u32>,
+        limit: u32,
+        offset: u32,
     ) -> Result<Vec<Todo>> {
         let resp = self.execute(|jwt, key| {
             let mut req = self
                 .client
                 .get(format!("{}/v1/todos", self.base_url))
-                .headers(self.auth_headers(jwt, key));
+                .headers(self.auth_headers(jwt, key))
+                .query(&[("limit", limit.to_string()), ("offset", offset.to_string())]);
             if let Some(c) = completed {
                 req = req.query(&[("completed", c.to_string())]);
             }
             if let Some(p) = priority {
                 req = req.query(&[("priority", p)]);
-            }
-            if let Some(l) = limit {
-                req = req.query(&[("limit", l.to_string())]);
-            }
-            if let Some(o) = offset {
-                req = req.query(&[("offset", o.to_string())]);
             }
             req
         })?;

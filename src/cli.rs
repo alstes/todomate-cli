@@ -84,13 +84,13 @@ pub struct ListArgs {
     #[arg(short = 'p', long, value_name = "LEVEL")]
     pub priority: Option<String>,
 
-    /// Maximum number of todos to return (default: 50)
-    #[arg(long, value_name = "N")]
-    pub limit: Option<u32>,
+    /// Maximum number of todos to return (max: 100)
+    #[arg(long, value_name = "N", default_value_t = 50)]
+    pub limit: u32,
 
     /// Number of todos to skip (for pagination)
-    #[arg(long, value_name = "N")]
-    pub offset: Option<u32>,
+    #[arg(long, value_name = "N", default_value_t = 0)]
+    pub offset: u32,
 }
 
 #[derive(Args)]
