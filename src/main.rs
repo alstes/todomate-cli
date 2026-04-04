@@ -60,6 +60,7 @@ fn handle_api_command(client: &api::ApiClient, command: &Command, json: bool) ->
         Command::Done { id } => commands::todos::done(client, id, json),
         Command::Edit(args) => commands::todos::edit(client, args, json),
         Command::Rm(args) => commands::todos::rm(client, args),
+        Command::Reorder(args) => commands::todos::reorder(client, args, json),
         Command::Goal { action } => commands::goals::handle(client, action, json),
         Command::Vision { action } => commands::vision::handle(client, action, json),
         Command::Auth { .. } | Command::Config { .. } => unreachable!(),

@@ -1,6 +1,7 @@
-use crate::api::models::{CreateGoalRequest, UpdateGoalRequest};
+use crate::api::models::{CreateGoalRequest, ReorderPosition, UpdateGoalRequest};
 use crate::api::ApiClient;
 use crate::cli::GoalCommand;
+use crate::error::CliError;
 use crate::output;
 use anyhow::Result;
 
@@ -78,6 +79,33 @@ pub fn handle(client: &ApiClient, action: &GoalCommand, json: bool) -> Result<()
                 output::print_json(&goal);
             } else {
                 output::print_goal_done(&goal);
+            }
+        }
+        GoalCommand::Reorder {
+            id,
+            top,
+            bottom,
+            after,
+        } => {
+            let position = if *top {
+                ReorderPosition::Named("top".to_string())
+            } else if *bottom {
+                ReorderPosition::Named("bottom".to_string())
+            } else if let Some(after_id) = after {
+                ReorderPosition::After {
+                    after: after_id.clone(),
+                }
+            } else {
+                return Err(CliError::Other(
+                    "specify one of --top, --bottom, or --after <ID>".to_string(),
+                )
+                .into());
+            };
+            let goal = client.reorder_goal(id, position)?;
+            if json {
+                output::print_json(&goal);
+            } else {
+                println!("Moved: {}", goal.text);
             }
         }
         GoalCommand::Rm { id, force } => {

@@ -1,6 +1,7 @@
-use crate::api::models::{CreateTodoRequest, UpdateTodoRequest};
+use crate::api::models::{CreateTodoRequest, ReorderPosition, UpdateTodoRequest};
 use crate::api::ApiClient;
-use crate::cli::{AddArgs, EditArgs, ListArgs, RmArgs};
+use crate::cli::{AddArgs, EditArgs, ListArgs, ReorderArgs, RmArgs};
+use crate::error::CliError;
 use crate::output;
 use anyhow::Result;
 
@@ -76,6 +77,30 @@ pub fn edit(client: &ApiClient, args: &EditArgs, json: bool) -> Result<()> {
         output::print_json(&todo);
     } else {
         output::print_todo_updated(&todo);
+    }
+    Ok(())
+}
+
+pub fn reorder(client: &ApiClient, args: &ReorderArgs, json: bool) -> Result<()> {
+    let position = if args.top {
+        ReorderPosition::Named("top".to_string())
+    } else if args.bottom {
+        ReorderPosition::Named("bottom".to_string())
+    } else if let Some(after_id) = &args.after {
+        ReorderPosition::After {
+            after: after_id.clone(),
+        }
+    } else {
+        return Err(
+            CliError::Other("specify one of --top, --bottom, or --after <ID>".to_string()).into(),
+        );
+    };
+
+    let todo = client.reorder_todo(&args.id, position)?;
+    if json {
+        output::print_json(&todo);
+    } else {
+        println!("Moved: {}", todo.text);
     }
     Ok(())
 }

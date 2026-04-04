@@ -39,6 +39,8 @@ pub enum Command {
     /// Delete a todo
     #[command(alias = "delete")]
     Rm(RmArgs),
+    /// Move a todo to a different position
+    Reorder(ReorderArgs),
     /// Goal management subcommands
     Goal {
         #[command(subcommand)]
@@ -138,6 +140,24 @@ pub struct EditArgs {
 }
 
 #[derive(Args)]
+pub struct ReorderArgs {
+    /// Todo ID
+    pub id: String,
+
+    /// Move to the top
+    #[arg(long, conflicts_with_all = ["bottom", "after"])]
+    pub top: bool,
+
+    /// Move to the bottom
+    #[arg(long, conflicts_with_all = ["top", "after"])]
+    pub bottom: bool,
+
+    /// Place after this todo ID
+    #[arg(long, value_name = "ID", conflicts_with_all = ["top", "bottom"])]
+    pub after: Option<String>,
+}
+
+#[derive(Args)]
 pub struct RmArgs {
     /// Todo ID
     pub id: String,
@@ -181,6 +201,20 @@ pub enum GoalCommand {
         id: String,
         #[arg(long)]
         force: bool,
+    },
+    /// Move a goal to a different position
+    Reorder {
+        /// Goal ID
+        id: String,
+        /// Move to the top
+        #[arg(long, conflicts_with_all = ["bottom", "after"])]
+        top: bool,
+        /// Move to the bottom
+        #[arg(long, conflicts_with_all = ["top", "after"])]
+        bottom: bool,
+        /// Place after this goal ID
+        #[arg(long, value_name = "ID", conflicts_with_all = ["top", "bottom"])]
+        after: Option<String>,
     },
 }
 

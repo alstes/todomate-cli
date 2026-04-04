@@ -139,6 +139,20 @@ pub struct UpdateVisionRequest {
     pub description: String,
 }
 
+// --- Reorder ---
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(untagged)]
+pub enum ReorderPosition {
+    Named(String), // "top" or "bottom"
+    After { after: String },
+}
+
+#[derive(Debug, Serialize)]
+pub struct ReorderRequest {
+    pub position: ReorderPosition,
+}
+
 // --- Generic delete response ---
 
 #[derive(Debug, Deserialize)]
