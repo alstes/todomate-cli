@@ -57,6 +57,27 @@ todo vision show         # show your vision
 
 All commands support `--json` for scripting.
 
+## 🤖 Using TodoMate with AI agents
+
+All commands support `--json`, making the CLI composable with AI coding agents that have terminal access.
+
+```sh
+todo list --json | jq '.[].text'         # pipe into any tool
+todo add "Fix the bug" --priority high   # agents can create todos mid-session
+todo done <id>                           # and close them when done
+```
+
+**CLI vs MCP server — when to use which:**
+
+| | CLI | [MCP server](https://mcp.todo.ac) |
+|---|---|---|
+| Terminal / AI coding agent | ✅ Best choice | — |
+| Claude.ai / chat interfaces | — | ✅ Best choice |
+| Scripting & pipes | ✅ | — |
+| No terminal available | — | ✅ |
+
+When a terminal is available, the CLI is the better tool for AI agents — it's a first-class Unix process with structured output, exit codes, and no extra infrastructure needed.
+
 ## Requirements
 
 - [GitHub CLI](https://cli.github.com) (`gh`) — used for the default login flow
