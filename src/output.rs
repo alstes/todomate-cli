@@ -1,5 +1,5 @@
 use crate::api::models::{Goal, Todo, Vision};
-use colored_json::{ColorMode, Output};
+use colored_json::ColorMode;
 use comfy_table::{presets::UTF8_BORDERS_ONLY, Table};
 use owo_colors::OwoColorize;
 use serde::Serialize;
@@ -67,9 +67,9 @@ pub fn print_todo_created(todo: &Todo) {
 
 pub fn print_todo_done(todo: &Todo) {
     if color_enabled() {
-        println!("{} {}", "✓ Done:".green(), todo.text);
+        println!("{} {}  {}", "✓ Done:".green(), todo.text, todo.id.dimmed());
     } else {
-        println!("✓ Done: {}", todo.text);
+        println!("✓ Done: {}  {}", todo.text, todo.id);
     }
 }
 
@@ -86,7 +86,7 @@ pub fn print_todo_updated(todo: &Todo) {
 }
 
 fn format_todo_line(todo: &Todo) -> String {
-    format!("{}  [{}]", todo.text, todo.priority.to_uppercase())
+    format!("{}  [{}]  {}", todo.text, todo.priority.to_uppercase(), todo.id)
 }
 
 fn format_priority(p: &str) -> String {
