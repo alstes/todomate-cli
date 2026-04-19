@@ -7,7 +7,7 @@ use models::*;
 use reqwest::blocking::{Client, RequestBuilder, Response};
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION, CONTENT_TYPE};
 
-const APIM_KEY_HEADER: &str = "Ocp-Apim-Subscription-Key";
+const APIM_KEY_HEADER: &str = "TodoMate-Api-Key";
 
 pub struct ApiClient {
     client: Client,
