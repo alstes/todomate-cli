@@ -26,6 +26,8 @@ pub enum Command {
         #[command(subcommand)]
         action: AuthCommand,
     },
+    /// Get a single todo by ID
+    Get { id: String },
     /// List todos
     #[command(alias = "ls")]
     List(ListArgs),
@@ -194,6 +196,8 @@ pub struct TagArgs {
 
 #[derive(Subcommand)]
 pub enum GoalCommand {
+    /// Get a single goal by ID
+    Get { id: String },
     /// List goals
     List {
         #[arg(short = 'c', long)]

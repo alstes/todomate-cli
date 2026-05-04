@@ -134,6 +134,15 @@ impl ApiClient {
         parse_response(resp)
     }
 
+    pub fn get_todo(&self, id: &str) -> Result<Todo> {
+        let resp = self.execute(|jwt, key| {
+            self.client
+                .get(format!("{}/v1/todos/{id}", self.base_url))
+                .headers(self.auth_headers(jwt, key))
+        })?;
+        parse_response(resp)
+    }
+
     pub fn create_todo(&self, body: CreateTodoRequest) -> Result<Todo> {
         let resp = self.execute(|jwt, key| {
             self.client
@@ -191,6 +200,15 @@ impl ApiClient {
     }
 
     // --- Goals ---
+
+    pub fn get_goal(&self, id: &str) -> Result<Goal> {
+        let resp = self.execute(|jwt, key| {
+            self.client
+                .get(format!("{}/v1/goals/{id}", self.base_url))
+                .headers(self.auth_headers(jwt, key))
+        })?;
+        parse_response(resp)
+    }
 
     pub fn list_goals(&self) -> Result<Vec<Goal>> {
         let resp = self.execute(|jwt, key| {

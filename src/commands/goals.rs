@@ -7,6 +7,14 @@ use anyhow::Result;
 
 pub fn handle(client: &ApiClient, action: &GoalCommand, json: bool) -> Result<()> {
     match action {
+        GoalCommand::Get { id } => {
+            let goal = client.get_goal(id)?;
+            if json {
+                output::print_json(&goal);
+            } else {
+                output::print_goal(&goal);
+            }
+        }
         GoalCommand::List { completed, all } => {
             let goals = client.list_goals()?;
             let goals: Vec<_> = goals

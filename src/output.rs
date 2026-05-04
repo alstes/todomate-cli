@@ -47,11 +47,11 @@ pub fn print_todos(todos: &[Todo]) {
 
     let mut table = Table::new();
     table.load_preset(UTF8_BORDERS_ONLY);
-    table.set_header(vec!["#", "Priority", "Text"]);
+    table.set_header(vec!["#", "Priority", "Text", "ID"]);
 
     for (i, todo) in todos.iter().enumerate() {
         let priority = format_priority(&todo.priority);
-        table.add_row(vec![(i + 1).to_string(), priority, todo.text.clone()]);
+        table.add_row(vec![(i + 1).to_string(), priority, todo.text.clone(), todo.id.clone()]);
     }
 
     println!("{table}");
@@ -120,10 +120,10 @@ pub fn print_goals(goals: &[Goal]) {
 
     let mut table = Table::new();
     table.load_preset(UTF8_BORDERS_ONLY);
-    table.set_header(vec!["#", "Text"]);
+    table.set_header(vec!["#", "Text", "ID"]);
 
     for (i, goal) in goals.iter().enumerate() {
-        table.add_row(vec![(i + 1).to_string(), goal.text.clone()]);
+        table.add_row(vec![(i + 1).to_string(), goal.text.clone(), goal.id.clone()]);
     }
 
     println!("{table}");
@@ -154,6 +154,53 @@ pub fn print_goal_updated(goal: &Goal) {
         println!("{} {}", "~ Updated:".cyan(), goal.text);
     } else {
         println!("~ Updated: {}", goal.text);
+    }
+}
+
+pub fn print_todo(todo: &Todo) {
+    let status = if todo.completed { "✓ completed" } else { "○ active" };
+    if color_enabled() {
+        println!("{}", todo.text.bold());
+    } else {
+        println!("{}", todo.text);
+    }
+    println!("ID:       {}", todo.id);
+    println!("Status:   {status}");
+    println!("Priority: {}", format_priority(&todo.priority));
+    if !todo.tags.is_empty() {
+        println!("Tags:     {}", todo.tags.join(", "));
+    }
+    if !todo.goal_ids.is_empty() {
+        println!("Goals:    {}", todo.goal_ids.join(", "));
+    }
+    if let Some(due) = &todo.due_date {
+        println!("Due:      {due}");
+    }
+    if let Some(desc) = &todo.description {
+        if !desc.is_empty() {
+            println!("\nDescription:\n{desc}");
+        }
+    }
+    if let Some(notes) = &todo.notes {
+        if !notes.is_empty() {
+            println!("\nNotes:\n{notes}");
+        }
+    }
+}
+
+pub fn print_goal(goal: &Goal) {
+    let status = if goal.completed { "✓ completed" } else { "○ active" };
+    if color_enabled() {
+        println!("{}", goal.text.bold());
+    } else {
+        println!("{}", goal.text);
+    }
+    println!("ID:     {}", goal.id);
+    println!("Status: {status}");
+    if let Some(notes) = &goal.notes {
+        if !notes.is_empty() {
+            println!("\nNotes:\n{notes}");
+        }
     }
 }
 

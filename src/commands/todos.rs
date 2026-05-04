@@ -32,6 +32,16 @@ pub fn list(client: &ApiClient, args: &ListArgs, json: bool) -> Result<()> {
     Ok(())
 }
 
+pub fn get(client: &ApiClient, id: &str, json: bool) -> Result<()> {
+    let todo = client.get_todo(id)?;
+    if json {
+        output::print_json(&todo);
+    } else {
+        output::print_todo(&todo);
+    }
+    Ok(())
+}
+
 pub fn add(client: &ApiClient, args: &AddArgs, json: bool) -> Result<()> {
     let todo = client.create_todo(CreateTodoRequest {
         text: args.text.clone(),

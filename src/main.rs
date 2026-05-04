@@ -55,6 +55,7 @@ fn handle_config(action: &ConfigCommand) -> Result<()> {
 
 fn handle_api_command(client: &api::ApiClient, command: &Command, json: bool) -> Result<()> {
     match command {
+        Command::Get { id } => commands::todos::get(client, id, json),
         Command::List(args) => commands::todos::list(client, args, json),
         Command::Add(args) => commands::todos::add(client, args, json),
         Command::Done { id } => commands::todos::done(client, id, json),
