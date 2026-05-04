@@ -88,6 +88,18 @@ pub struct ListArgs {
     #[arg(short = 'p', long, value_name = "LEVEL")]
     pub priority: Option<String>,
 
+    /// Filter by tags (comma-separated, AND semantics: e.g. api,mcp)
+    #[arg(short = 't', long, value_name = "TAGS")]
+    pub tags: Option<String>,
+
+    /// Full-text search over text, description, and notes
+    #[arg(short = 'q', long, value_name = "TEXT")]
+    pub query: Option<String>,
+
+    /// Filter by goal IDs (comma-separated)
+    #[arg(long, value_name = "GOAL_IDS")]
+    pub goal_ids: Option<String>,
+
     /// Maximum number of todos to return (max: 100)
     #[arg(long, value_name = "N", default_value_t = 50)]
     pub limit: u32,

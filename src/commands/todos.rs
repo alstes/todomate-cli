@@ -14,7 +14,15 @@ pub fn list(client: &ApiClient, args: &ListArgs, json: bool) -> Result<()> {
         Some(false) // default: active only
     };
 
-    let todos = client.list_todos(completed, args.priority.as_deref(), args.limit, args.offset)?;
+    let todos = client.list_todos(
+        completed,
+        args.priority.as_deref(),
+        args.tags.as_deref(),
+        args.query.as_deref(),
+        args.goal_ids.as_deref(),
+        args.limit,
+        args.offset,
+    )?;
 
     if json {
         output::print_json(&todos);

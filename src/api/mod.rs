@@ -102,6 +102,9 @@ impl ApiClient {
         &self,
         completed: Option<bool>,
         priority: Option<&str>,
+        tags: Option<&str>,
+        query: Option<&str>,
+        goal_ids: Option<&str>,
         limit: u32,
         offset: u32,
     ) -> Result<Vec<Todo>> {
@@ -116,6 +119,15 @@ impl ApiClient {
             }
             if let Some(p) = priority {
                 req = req.query(&[("priority", p)]);
+            }
+            if let Some(t) = tags {
+                req = req.query(&[("tags", t)]);
+            }
+            if let Some(q) = query {
+                req = req.query(&[("query", q)]);
+            }
+            if let Some(g) = goal_ids {
+                req = req.query(&[("goalIds", g)]);
             }
             req
         })?;
