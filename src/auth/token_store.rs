@@ -95,14 +95,33 @@ fn save_to_file(creds: &Credentials) -> Result<()> {
         subscription_key: creds.subscription_key.clone(),
     };
     let contents = toml::to_string_pretty(&file).map_err(|e| CliError::Config(e.to_string()))?;
-    fs::write(&path, &contents)?;
-    // Restrict permissions to owner-only (Unix only — on Windows this is a no-op)
+    write_private(&path, &contents)?;
+    Ok(())
+}
+
+/// Write `contents` to `path`, readable and writable by the owner only, from
+/// the start: the file is created with mode 0600, never briefly with the
+/// default permissions, and a file left with wider permissions (by an older
+/// version) is narrowed before anything is written to it. Unix only; on
+/// Windows, an ordinary write.
+fn write_private(path: &std::path::Path, contents: &str) -> std::io::Result<()> {
     #[cfg(unix)]
     {
-        use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(&path, fs::Permissions::from_mode(0o600))?;
+        use std::io::Write;
+        use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .mode(0o600)
+            .open(path)?;
+        file.set_permissions(fs::Permissions::from_mode(0o600))?;
+        file.write_all(contents.as_bytes())
     }
-    Ok(())
+    #[cfg(not(unix))]
+    {
+        fs::write(path, contents)
+    }
 }
 
 fn load_from_file() -> Result<Credentials> {
@@ -126,4 +145,41 @@ fn delete_file() -> Result<()> {
         fs::remove_file(path)?;
     }
     Ok(())
+}
+
+#[cfg(all(test, unix))]
+mod tests {
+    use super::*;
+    use std::os::unix::fs::PermissionsExt;
+
+    /// A path of its own in the temporary directory, for one test.
+    fn temp_path(name: &str) -> std::path::PathBuf {
+        let path = std::env::temp_dir().join(format!("todomate-cli-{}-{name}", std::process::id()));
+        let _ = fs::remove_file(&path);
+        path
+    }
+
+    fn mode(path: &std::path::Path) -> u32 {
+        fs::metadata(path).unwrap().permissions().mode() & 0o777
+    }
+
+    #[test]
+    fn new_file_is_private() {
+        let path = temp_path("new");
+        write_private(&path, "secret").unwrap();
+        assert_eq!(mode(&path), 0o600);
+        assert_eq!(fs::read_to_string(&path).unwrap(), "secret");
+        fs::remove_file(&path).unwrap();
+    }
+
+    #[test]
+    fn existing_file_is_narrowed_and_replaced() {
+        let path = temp_path("existing");
+        fs::write(&path, "an older, longer secret").unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o644)).unwrap();
+        write_private(&path, "new").unwrap();
+        assert_eq!(mode(&path), 0o600);
+        assert_eq!(fs::read_to_string(&path).unwrap(), "new");
+        fs::remove_file(&path).unwrap();
+    }
 }
